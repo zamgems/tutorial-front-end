@@ -1,24 +1,33 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import Tutorials from './Tutorials'
+import TutorialForm from './TutorialForm'
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div>
+        <Router>
+          <li>
+            <Link to={"/tutorials"}>
+              Tutorials
+            </Link>
+          </li>
+          <li>
+            <a href="/New" >
+              Add
+            </a>
+          </li>
+          <Switch>
+            <Route exact path={["/", "/tutorials"]} component={Tutorials} />
+            <Route exact path="/new" component={TutorialForm} />
+            <Route path="/tutorials/:id/edit" component={TutorialForm} />
+            {//             <Route path="/tutorials/:id" component={Tutorial} />
+          }
+          </Switch>
+        </Router>
+      </div>
     </div>
   );
 }
