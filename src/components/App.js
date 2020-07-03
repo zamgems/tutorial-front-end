@@ -1,12 +1,12 @@
 import React from 'react';
-import './App.css';
+import '../styles/App.css';
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import Tutorials from './Tutorials'
-import TutorialForm from './TutorialForm'
+import Tutorials from './tutorial/Tutorials'
+import TutorialForm from './tutorial/TutorialForm'
 
 function App() {
   return (
-    <div className="App">
+    <div className="app">
       <div>
         <Router>
           <li>

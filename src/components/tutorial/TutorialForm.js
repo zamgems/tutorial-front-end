@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import TutorialDataService from "./services/tutorialService";
+import TutorialDataService from "../../services/tutorialService";
 
 function TutorialForm(props) {
 	const [tutorial, setTutorial] = useState({
@@ -36,9 +36,10 @@ function TutorialForm(props) {
 		if(data.id){
 			TutorialDataService.update(data.id, data)
 				.then(response => {
+					const { title, description } = response.data;
 					setTutorial({
-						title: response.data.title,
-						description: response.data.description
+						title,
+						description
 					})
 					console.log(response.data);
 				})
@@ -49,9 +50,10 @@ function TutorialForm(props) {
 		else {
 			TutorialDataService.create(data)
 				.then(response => {
+					const { title, description } = response.data;
 					setTutorial({
-						title: response.data.title,
-						description: response.data.description
+						title,
+						description
 					})
 					console.log(response.data);
 				})
