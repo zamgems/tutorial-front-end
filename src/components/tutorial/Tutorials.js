@@ -1,15 +1,25 @@
 import React, {useState, useEffect} from 'react';
 import TutorialDataService from "../../services/tutorialService";
-import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+// import { connect } from "react-redux"
+import { useDispatch } from "react-redux";
 
-function Tutorials() {
+function Tutorials(props) {
 	const [tutorials, setTutorials] = useState([]);
 
+	const dispatch = useDispatch();
+
+	const data = useSelector((state) => state);
+
+	console.log("Tutorials component above ", data);
 	useEffect(() => {
 		TutorialDataService.getAll()
-      .then(response => {
-        setTutorials(response.data);
-        console.log(response.data);
+      		.then(response => {
+        console.log("[tutorials after get all service] ",response.data);
+
+    	dispatch({ type: "GET_TUTORIALS", payload: response.data });
+        setTutorials(data.tutorials);
+
       })
       .catch(e => {
         console.log(e);
@@ -19,13 +29,18 @@ function Tutorials() {
 	function handleDelete(id) {
     TutorialDataService.delete(id)
       .then(response => {
-      	const newTutorialsArr = tutorials.filter((tutorial) => tutorial._id !== id )
-      	setTutorials([...newTutorialsArr])
-        console.log(response.data);
+      	// const newTutorialsArr = tutorials.filter((tutorial) => tutorial._id !== id )
+      	// setTutorials([...newTutorialsArr])
+        dispatch({ type: "DELETE_TUTORIAL", tutorialId: id });
+        console.log("[ delete service ]",response.data);
       })
       .catch(e => {
         console.log(e);
       });
+  }
+
+  function handleEdit(id) {
+  	props.editTutorial(id)
   }
 
 	return(
@@ -47,12 +62,11 @@ function Tutorials() {
 			{tutorials.map((tutorial) => (
 					
 					<tr key={tutorial._id}>
-						<td>{tutorial.title}</td>
+						<td>{tutorial.title + tutorial._id}</td>
 						<td>{tutorial.description}</td>
 						<td>
-							<Link to={"/tutorials/" + tutorial._id + "/edit"} >
-              	Edit
-            	</Link>
+							<button onClick={() => {handleEdit(tutorial._id)}}>Edit</button>
+
             </td>
             <td>
 							<button onClick={() => {handleDelete(tutorial._id)}}>Delete</button>
@@ -64,4 +78,11 @@ function Tutorials() {
 	)
 }
 
-export default Tutorials;
+// const mapStateToProps = state => {
+// 	return {
+// 		tutorials
+// 	}
+// }
+
+export default Tutorials
+// export default connect()(Tutorials);

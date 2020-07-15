@@ -1,28 +1,37 @@
 import React, {useState, useEffect} from 'react';
 import TutorialDataService from "../../services/tutorialService";
+import { useDispatch, useSelector } from "react-redux";
 
 function TutorialForm(props) {
+	const [editMode, setEditMode] = useState(false);
+
 	const [tutorial, setTutorial] = useState({
-		id: "",
+		_id: "",
 		title: "",
 		description: ""
 	});
 
-	const [editMode, setEditMode] = useState(false);
+	const dispatch = useDispatch();
+	const data = useSelector((state) => state);
 
 	useEffect(() => {
-		if (props.match.params.id) {
-			TutorialDataService.get(props.match.params.id)
-				.then(response => {
-					setTutorial({
-						id: response.data._id,
-						title: response.data.title,
-						description: response.data.description,
-					});
-					setEditMode(true);
-				})
+		if (!!props.tutorialId) {
+			dispatch({ type: "GET_TUTORIAL", tutorialId: props.tutorialId });
+
+			const currentTutorial = data.currentTutorial
+      setTutorial({...currentTutorial});
+      setEditMode(true);
+			// TutorialDataService.get(props.tutorialId)
+			// 	.then(response => {
+			// 		setTutorial({
+			// 			id: response.data._id,
+			// 			title: response.data.title,
+			// 			description: response.data.description,
+			// 		});
+			// 		setEditMode(true);
+			// 	})
 		}
-	}, []);
+	}, [props.tutorialId]);
 
 	function onChangeField(e) {
 		setTutorial({
@@ -31,35 +40,26 @@ function TutorialForm(props) {
 	}
 
 	function handleSubmit() {
-		const data = tutorial;
-
-		if(data.id){
-			TutorialDataService.update(data.id, data)
-				.then(response => {
-					const { title, description } = response.data;
-					setTutorial({
-						title,
-						description
-					})
-					console.log(response.data);
-				})
-				.catch(e => {
+		const tutorialData = {title: tutorial.title, description: tutorial.description}
+		if(tutorial._id){
+			TutorialDataService.update(tutorial._id, tutorialData).then(response => {
+					console.log("[update form]" ,response.data);
+				}).catch(e => {
 					console.log(e);
 				})
+			dispatch({ type: "UPDATE_TUTORIAL", tutorialId: tutorial._id, data: tutorialData });
 		}
-		else {
-			TutorialDataService.create(data)
+		else {			
+			TutorialDataService.create(tutorialData)
 				.then(response => {
-					const { title, description } = response.data;
-					setTutorial({
-						title,
-						description
-					})
-					console.log(response.data);
+					;
+					console.log("[create form]" ,response.data);
 				})
 				.catch(e => {
 					console.log(e);
 				})
+
+			dispatch({ type: "ADD_TUTORIAL", data: tutorialData });
 		}
 	}
 
