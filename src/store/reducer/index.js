@@ -1,7 +1,11 @@
-// import { AUTH_LOGIN, USER_REGISTER, LOGOUT } from "../../constant/type";
 const initialState = {
   tutorials: [],
-  currentTutorial: {},
+  currentTutorial: {
+    _id: "",
+    title: "",
+    description: ""
+  },
+  loading: true,
 };
 
 const Reducer = (state = initialState, action) => {
@@ -40,10 +44,18 @@ const Reducer = (state = initialState, action) => {
       const newTutorial = {}; 
       newTutorial.title = action.data.title;
       newTutorial.description = action.data.description;
+      newTutorial._id = action.data._id
       oldTutorialsArray.push(newTutorial)
       return {
         ...state,
         tutorials: oldTutorialsArray
+      }
+
+    case "SET_LOADING":
+      const loading = action.loading;
+      return {
+        ...state,
+        loading,
       }
 
     default:
@@ -53,4 +65,4 @@ const Reducer = (state = initialState, action) => {
   }
 };
 
-export default Reducer;
+export { initialState, Reducer }

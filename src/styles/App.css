@@ -1,3 +1,14 @@
 .app {
   text-align: center;
+  display: flex;
+}
+
+.tutorial-form {
+	border: 1px solid black;
+	padding: 10px;
+	margin: 10px;
+}
+
+.loading-text {
+	color: red;
 }

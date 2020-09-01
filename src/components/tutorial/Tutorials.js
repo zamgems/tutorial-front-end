@@ -1,25 +1,18 @@
 import React, {useState, useEffect} from 'react';
 import TutorialDataService from "../../services/tutorialService";
-import { useSelector } from "react-redux";
-// import { connect } from "react-redux"
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 function Tutorials(props) {
-	const [tutorials, setTutorials] = useState([]);
-
+	const [loading, setLoading] = useState(true); 
 	const dispatch = useDispatch();
+	const state = useSelector((state) => state);
 
-	const data = useSelector((state) => state);
-
-	console.log("Tutorials component above ", data);
 	useEffect(() => {
 		TutorialDataService.getAll()
       		.then(response => {
         console.log("[tutorials after get all service] ",response.data);
-
     	dispatch({ type: "GET_TUTORIALS", payload: response.data });
-        setTutorials(data.tutorials);
-
+        setLoading(false);
       })
       .catch(e => {
         console.log(e);
@@ -27,23 +20,26 @@ function Tutorials(props) {
 		}, []);	
 
 	function handleDelete(id) {
-    TutorialDataService.delete(id)
-      .then(response => {
-      	// const newTutorialsArr = tutorials.filter((tutorial) => tutorial._id !== id )
-      	// setTutorials([...newTutorialsArr])
-        dispatch({ type: "DELETE_TUTORIAL", tutorialId: id });
-        console.log("[ delete service ]",response.data);
-      })
-      .catch(e => {
-        console.log(e);
-      });
-  }
+	    TutorialDataService.delete(id)
+	      .then(response => {
+	        dispatch({ type: "DELETE_TUTORIAL", tutorialId: id });
+	        console.log("[ delete service ]",response.data);
+	      })
+	      .catch(e => {
+	        console.log(e);
+	      });
+	}
 
-  function handleEdit(id) {
-  	props.editTutorial(id)
-  }
+  	function handleEdit(id) {
+  		dispatch({ type: "GET_TUTORIAL", tutorialId: id });
+  		props.editTutorial(id);
+  	}
+
+  const tutorials = state.tutorials;
 
 	return(
+		<div>
+		<span className='loading-text' >{ loading ? "Loading, please wait" : "" }</span>
 		<table>
 			<thead>
 				<tr>
@@ -62,7 +58,7 @@ function Tutorials(props) {
 			{tutorials.map((tutorial) => (
 					
 					<tr key={tutorial._id}>
-						<td>{tutorial.title + tutorial._id}</td>
+						<td>{tutorial.title}</td>
 						<td>{tutorial.description}</td>
 						<td>
 							<button onClick={() => {handleEdit(tutorial._id)}}>Edit</button>
@@ -75,14 +71,8 @@ function Tutorials(props) {
 				))}
 			</tbody>
 		</table>
+		</div>
 	)
 }
 
-// const mapStateToProps = state => {
-// 	return {
-// 		tutorials
-// 	}
-// }
-
 export default Tutorials
-// export default connect()(Tutorials);

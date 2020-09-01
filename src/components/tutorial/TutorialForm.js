@@ -4,32 +4,19 @@ import { useDispatch, useSelector } from "react-redux";
 
 function TutorialForm(props) {
 	const [editMode, setEditMode] = useState(false);
-
 	const [tutorial, setTutorial] = useState({
-		_id: "",
-		title: "",
-		description: ""
-	});
+    	_id: "",
+    	title: "",
+    	description: ""
+  });
 
 	const dispatch = useDispatch();
-	const data = useSelector((state) => state);
+	const state = useSelector((state) => state);
 
 	useEffect(() => {
 		if (!!props.tutorialId) {
-			dispatch({ type: "GET_TUTORIAL", tutorialId: props.tutorialId });
-
-			const currentTutorial = data.currentTutorial
-      setTutorial({...currentTutorial});
-      setEditMode(true);
-			// TutorialDataService.get(props.tutorialId)
-			// 	.then(response => {
-			// 		setTutorial({
-			// 			id: response.data._id,
-			// 			title: response.data.title,
-			// 			description: response.data.description,
-			// 		});
-			// 		setEditMode(true);
-			// 	})
+      		setTutorial({...state.currentTutorial});
+      		setEditMode(true);
 		}
 	}, [props.tutorialId]);
 
@@ -39,8 +26,17 @@ function TutorialForm(props) {
 			[e.target.name]: e.target.value})
 	}
 
-	function handleSubmit() {
+	function clearForm() {
+		setTutorial({
+			_id: "",
+			title: "",
+			description: ""}
+		)
+	}
+
+	function handleSubmit(e) {
 		const tutorialData = {title: tutorial.title, description: tutorial.description}
+
 		if(tutorial._id){
 			TutorialDataService.update(tutorial._id, tutorialData).then(response => {
 					console.log("[update form]" ,response.data);
@@ -49,23 +45,26 @@ function TutorialForm(props) {
 				})
 			dispatch({ type: "UPDATE_TUTORIAL", tutorialId: tutorial._id, data: tutorialData });
 		}
-		else {			
+		else {
 			TutorialDataService.create(tutorialData)
 				.then(response => {
 					;
 					console.log("[create form]" ,response.data);
+					dispatch({ type: "ADD_TUTORIAL", data: response.data });
 				})
 				.catch(e => {
 					console.log(e);
 				})
-
-			dispatch({ type: "ADD_TUTORIAL", data: tutorialData });
 		}
+		clearForm();
+		e.preventDefault();
+		setEditMode(false);
 	}
 
 	return(
-		<div>
-			<form onSubmit={handleSubmit}>
+		<div className='tutorial-form'>
+			<center><h3>{editMode ? "Update Tutorial" : "Add Tutorial"}</h3></center>
+			<form onSubmit={handleSubmit} >
 				<label> Title: 
 					<input
 	              type="text"

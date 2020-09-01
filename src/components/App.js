@@ -5,11 +5,7 @@ import Tutorials from './tutorial/Tutorials'
 import TutorialForm from './tutorial/TutorialForm'
 
 function App() {
-  // const [showForm, setShowForm] = useState(false);
   const [tutorialId, setTutorialId] = useState("");
-  // handleOnClick = () => {
-
-  // }
 
   const handleEditTutorial = (id) => {
     setTutorialId(id);
@@ -17,11 +13,8 @@ function App() {
 
   return (
     <div className="app">
-      <div>
-        {/*<button onClick={handleOnClick}>Add tutorial</button>*/}
-        <Tutorials editTutorial={handleEditTutorial}/>
-        <TutorialForm tutorialId={tutorialId}/>
-      </div>
+      <Tutorials editTutorial={handleEditTutorial}/>
+      <TutorialForm tutorialId={tutorialId}/>
     </div>
   );
 }
